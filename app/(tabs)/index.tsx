@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/style/colors'
@@ -7,9 +7,12 @@ import { wh, wp } from '@/style/common'
 import { categories, notes } from '@/data/category'
 import { truncateText } from '@/utils/truncateText';
 import Entypo from '@expo/vector-icons/Entypo';
+import { setIsModalOpen } from '@/store/features/notes/actions';
+import NoteModal from '@/components/Modal';
 
 const Home = () => {
     const [activeCategory, setActiveCategory] = useState('All')
+
 
     const handleSelectCategory = (category: string) => {
         if (category == activeCategory) return setActiveCategory('All')
@@ -64,8 +67,10 @@ const Home = () => {
                 right: 10,
                 zIndex: 50
             }}>
-                <AntDesign name="pluscircleo" size={40} color={colors.brightOrange} />
+                <AntDesign name="pluscircleo" size={40} color={colors.brightOrange} onPress={() => setIsModalOpen(true)} />
             </View>
+
+            <NoteModal />
         </SafeAreaView>
     )
 }
