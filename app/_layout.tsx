@@ -13,7 +13,6 @@ export default function RootLayout() {
 
 
   const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
-    console.log('user', user)
     setUser(user)
     if (initializing) setInitializing(false)
 
@@ -22,7 +21,6 @@ export default function RootLayout() {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
     return subscriber
   }, [])
-  console.log('segment  : ' + segments[0]);
 
   useEffect(() => {
     if (initializing) return

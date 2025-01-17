@@ -1,32 +1,4 @@
 
-type categories = {
-    name : string,
-    amount? : number
-}
-export const categories : categories[] = [
-    {
-        name: 'All',
-    },
-    {
-        name: 'Education',
-        amount: 1,
-    },
-    {
-        name: 'Gym',
-        amount: 1,
-
-    },
-    {
-        name: 'Bike',
-        amount: 1,
-
-    },
-    {
-        name: 'Game',
-        amount: 1,
-
-    }
-]
 
 
 

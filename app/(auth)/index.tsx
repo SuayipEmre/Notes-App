@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { ActivityIndicator, Alert, Button, StyleSheet, TextInput, View } from "react-native";
 import { FirebaseError } from "firebase/app";
-import auth from '@react-native-firebase/auth'
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import { colors } from "@/style/colors";
+import firestore from '@react-native-firebase/firestore';
 
 export default function index() {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
+
+
     const signIn = async () => {
         setLoading(true)
         try {
@@ -27,7 +30,10 @@ export default function index() {
 
         try {
             await auth().createUserWithEmailAndPassword(email, password)
-            Alert.alert('created account !')
+                .then((userCredential: FirebaseAuthTypes.UserCredential) => {
+                    saveUserToDB(userCredential)
+                    Alert.alert('user  account  created!')
+                })
 
         } catch (error) {
             const err = error as FirebaseError
@@ -35,6 +41,22 @@ export default function index() {
 
         }
         setLoading(false)
+    }
+
+    const saveUserToDB = async (userCredential: FirebaseAuthTypes.UserCredential) => {
+
+        try {
+            await firestore().collection('Users').doc(userCredential.user.uid).set({
+                displayName: userCredential.user.email?.split('@')[0],
+                email: userCredential.user.email,
+                photoURL: null,
+                id: userCredential.user.uid,
+                notes : []
+      
+            })
+        } catch (error) {
+            
+        }
     }
     return (
         <View style={styles.container}>
@@ -79,7 +101,7 @@ const styles = StyleSheet.create({
         height: 50,
         borderColor: colors.brightOrange,
         width: '100%',
-        color : colors.veryLightGray
+        color: colors.veryLightGray
     },
     button: {},
 })

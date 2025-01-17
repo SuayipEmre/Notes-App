@@ -1,23 +1,72 @@
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/style/colors'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { wh, wp } from '@/style/common'
-import { categories, notes } from '@/data/category'
+import { notes } from '@/data/category'
 import { truncateText } from '@/utils/truncateText';
 import Entypo from '@expo/vector-icons/Entypo';
 import { setIsModalOpen } from '@/store/features/notes/actions';
 import NoteModal from '@/components/Modal';
-
+import firestore from '@react-native-firebase/firestore';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { getUserDocument } from '@/utils/getUserDocument';
+type categories = {
+    title: string,
+    amount?: number
+}
+type notes = {
+    category: string,
+    note: string,
+    title: string
+}
 const Home = () => {
     const [activeCategory, setActiveCategory] = useState('All')
-
-
+    const currentUser: FirebaseAuthTypes.User | null = auth().currentUser
+    const [userNotes, setUserNotes] = useState<[] | notes[]>([])
+    const [userCategories, setUserCategories] = useState<categories[] | []>([])
     const handleSelectCategory = (category: string) => {
         if (category == activeCategory) return setActiveCategory('All')
         setActiveCategory(category)
     }
+
+
+    useEffect(() => {
+        getUserNotesFromDB()
+    }, [])
+
+    const getUserNotesFromDB = async () => {
+        const dbRef = await getUserDocument(currentUser)
+
+        if (dbRef.exists) {
+            const userData = dbRef.data()
+            const userNotes = userData?.notes ?? []
+            const userCategories = userData?.notes?.map((item: notes) => item?.category)
+
+            const uniqueCategories = userCategories.reduce((acc: { title: string; amount: number }[], category: string) => {
+                const existingCategory = acc.find(item => item.title === category);
+
+                if (existingCategory) {
+                    existingCategory.amount += 1; // Eğer kategori zaten varsa miktarı artır
+                } else {
+                    acc.push({ title: category, amount: 1 }); // Eğer yoksa yeni bir obje ekle
+                }
+
+                return acc;
+            }, []);
+
+
+            setUserCategories(uniqueCategories)
+
+
+
+            setUserCategories(uniqueCategories)
+
+            setUserNotes(userNotes as notes[])
+        }
+    }
+    console.log('categoriessssss', userCategories);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -27,27 +76,27 @@ const Home = () => {
             </View>
 
             <FlatList
-                data={notes}
+                data={userNotes}
                 numColumns={2}
                 columnWrapperStyle={{ justifyContent: 'space-between' }}
                 contentContainerStyle={styles.notesContainer}
                 renderItem={({ item }) => <View style={styles.noteItem}>
                     <View style={styles.note_header}>
-                        <Text style={styles.noteCategory}>{item.category}</Text>
+                        <Text style={styles.noteCategory}>{item?.category}</Text>
                         <Entypo name="dots-three-horizontal" size={24} color={colors.brightOrange} />
                     </View>
-                    <Text style={styles.noteCategoryText}>{truncateText(item.text, 300)}</Text>
+                    <Text style={styles.noteCategoryText}>{truncateText(item?.note, 300)}</Text>
                 </View>}
 
                 ListHeaderComponent={/*Categories */
                     <FlatList
                         horizontal
-                        data={categories}
+                        data={userCategories}
                         contentContainerStyle={styles.categoriesContainer}
                         renderItem={({ item }) => <TouchableOpacity
-                            onPress={() => handleSelectCategory(item.name)}
-                            style={[styles.categoryItem, activeCategory == item.name ? styles.activeCategoryItem : styles.inactiveCategoryItem]}>
-                            <Text style={[styles.categoryText, activeCategory == item.name ? styles.activeCategoryText : styles.inactiveCategoryText]}>{item.name}</Text>
+                            onPress={() => handleSelectCategory(item.title)}
+                            style={[styles.categoryItem, activeCategory == item.title ? styles.activeCategoryItem : styles.inactiveCategoryItem]}>
+                            <Text style={[styles.categoryText, activeCategory == item.title ? styles.activeCategoryText : styles.inactiveCategoryText]}>{item.title}</Text>
                             {
                                 item?.amount && (
                                     <View style={styles.categoryAmountContainer}>
