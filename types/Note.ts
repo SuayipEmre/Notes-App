@@ -3,6 +3,7 @@ type category = {
     amount?: number
 }
 type note = {
+    id : number,
     category: string,
     note: string,
     title: string

@@ -1,4 +1,4 @@
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
 import { ActivityIndicator, View } from "react-native";
@@ -9,7 +9,6 @@ export default function RootLayout() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null)
 
   const router = useRouter()
-  const segments = useSegments()
 
 
   const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {

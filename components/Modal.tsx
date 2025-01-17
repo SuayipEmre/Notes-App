@@ -3,12 +3,11 @@ import React from 'react'
 import { colors } from '@/style/colors'
 import Button from './Button'
 import Input from './Input'
-import { setIsModalOpen, setNoteCategory, setNoteTitle, setNoteValue } from '@/store/features/notes/actions'
+import { setIsModalOpen, setNoteCategory, setNoteTitle, setNoteValue, setNotes } from '@/store/features/notes/actions'
 import { useIsModalOpen, useNoteCategory, useNoteTitle, useNoteValue } from '@/store/features/notes/hooks'
 import { wh } from '@/style/common'
 import Modal from "react-native-modal";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { getUserDocument } from '@/utils/getUserDocument'
 
@@ -40,13 +39,13 @@ const NoteModal = () => {
             
             if (dbRef.exists) {
                 const userData = dbRef.data()
-                console.log('user data : ', userData);
 
                 const currentNotes = userData?.notes ?? []
 
                 const updatedNotes = [
                     ...currentNotes,
                     {
+                        id : currentNotes.length + 1,
                         title: noteTitle,
                         category: noteCategory,
                         note: noteValue
@@ -56,7 +55,10 @@ const NoteModal = () => {
                     notes: updatedNotes
                 })
                 console.log('db ref', dbRef)
+
+                setNotes(updatedNotes)
                 handleResetForm()
+                setIsModalOpen(false)
             }
         } catch (error) {
             console.log(error);

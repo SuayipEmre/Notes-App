@@ -1,17 +1,13 @@
-import { View, Text, Button, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 import auth from '@react-native-firebase/auth'
 import { colors } from '@/style/colors'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const Profile = () => {
-    const user = auth().currentUser
-
-    console.log(user);
     
     return (
         <SafeAreaView style={styles.container}>
-
 
             <View>
 

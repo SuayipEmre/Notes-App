@@ -4,18 +4,21 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/style/colors'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { wh, wp } from '@/style/common'
-import { setIsModalOpen } from '@/store/features/notes/actions';
+import { setIsModalOpen, setNotes } from '@/store/features/notes/actions';
 import NoteModal from '@/components/Modal';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { getUserDocument } from '@/utils/getUserDocument';
 import NoteCard from '@/components/NoteCard';
 import CategoryItem from '@/components/CategoryItem';
+import { useCategories, useNotes } from '@/store/features/notes/hooks';
 
 const Home = () => {
     const [activeCategory, setActiveCategory] = useState('All')
     const currentUser: FirebaseAuthTypes.User | null = auth().currentUser
-    const [userNotes, setUserNotes] = useState<[] | note[]>([])
-    const [userCategories, setUserCategories] = useState<category[] | []>([])
+    const userNotes = useNotes()
+    const userCategories = useCategories()
+    
+
     const handleSelectCategory = (category: string) => {
         if (category == activeCategory) return setActiveCategory('All')
         setActiveCategory(category)
@@ -27,36 +30,36 @@ const Home = () => {
     }, [])
 
     const getUserNotesFromDB = async () => {
-        const dbRef = await getUserDocument(currentUser)
-
+        const dbRef = await getUserDocument(currentUser);
+    
         if (dbRef.exists) {
-            const userData = dbRef.data()
-            const userNotes = userData?.notes ?? []
-            const userCategories = userData?.notes?.map((item: note) => item?.category)
-
-            const uniqueCategories = userCategories.reduce((acc: { title: string; amount: number }[], category: string) => {
-                const existingCategory = acc.find(item => item.title === category);
-
-                if (existingCategory) {
-                    existingCategory.amount += 1; // Eğer kategori zaten varsa miktarı artır
-                } else {
-                    acc.push({ title: category, amount: 1 }); // Eğer yoksa yeni bir obje ekle
-                }
-
-                return acc;
-            }, []);
+            const userData = dbRef.data();
+            const userNotes = userData?.notes ?? [];
+            setNotes(userNotes as note[]);
+        }
+    };
+    
 
 
-            setUserCategories(uniqueCategories)
+    const handleDeleteNote = async (note : note) => {
+        try {
+            const dbRef = await getUserDocument(currentUser)
 
+            if (dbRef.exists) {
+                const userData = dbRef.data()
+                const currentNotes = userData?.notes as note[] ?? []
+                const updatedNotes = currentNotes.filter(item => item.id != note.id)
+                await dbRef.ref.update({
+                    notes: updatedNotes
+                })
+                setNotes(updatedNotes)
+            }
+        } catch (error) {
+            console.log(error);
 
-
-            setUserCategories(uniqueCategories)
-
-            setUserNotes(userNotes as note[])
         }
     }
-
+    
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
@@ -69,7 +72,7 @@ const Home = () => {
                 numColumns={2}
                 columnWrapperStyle={{ justifyContent: 'space-between' }}
                 contentContainerStyle={styles.notesContainer}
-                renderItem={({ item }) => <NoteCard note={item} />}
+                renderItem={({ item }) => <NoteCard note={item} handleDeleteNote={handleDeleteNote} />}
                 ListHeaderComponent={/*Categories */
                     <FlatList
                         horizontal
