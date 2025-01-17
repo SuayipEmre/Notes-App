@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import React from 'react'
 import { colors } from '@/style/colors'
 import Button from './Button'
@@ -29,6 +29,7 @@ const NoteModal = () => {
         setNoteTitle('')
         setNoteValue('')
         setNoteCategory('')
+
     }
 
 
@@ -59,9 +60,12 @@ const NoteModal = () => {
                 setNotes(updatedNotes)
                 handleResetForm()
                 setIsModalOpen(false)
+                toggleModal()
             }
         } catch (error) {
-            console.log(error);
+            console.log(error)
+            toggleModal()
+            Alert.alert('Error', 'An error occured while creating note')
 
         }
 

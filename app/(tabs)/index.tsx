@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { act, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/style/colors'
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -17,13 +17,11 @@ const Home = () => {
     const currentUser: FirebaseAuthTypes.User | null = auth().currentUser
     const userNotes = useNotes()
     const userCategories = useCategories()
-    
 
     const handleSelectCategory = (category: string) => {
         if (category == activeCategory) return setActiveCategory('All')
         setActiveCategory(category)
     }
-
 
     useEffect(() => {
         getUserNotesFromDB()
@@ -68,7 +66,7 @@ const Home = () => {
             </View>
 
             <FlatList
-                data={userNotes}
+                data={activeCategory  == 'All' ? userNotes : userNotes?.filter(item => item.category == activeCategory)}
                 numColumns={2}
                 columnWrapperStyle={{ justifyContent: 'space-between' }}
                 contentContainerStyle={styles.notesContainer}

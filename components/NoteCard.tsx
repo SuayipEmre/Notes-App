@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 10,
         position :'absolute',
-        top : -10,
+        top : 20,
         right : 0,
         width : wp * 0.2
     },
