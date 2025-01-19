@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/style/colors'
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { wh, wp } from '@/style/common'
-import { setIsModalOpen, setNotes } from '@/store/features/notes/actions';
+import { setIsModalOpen, setNoteCategory, setNoteTitle, setNoteValue, setNotes } from '@/store/features/notes/actions';
 import NoteModal from '@/components/Modal';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { getUserDocument } from '@/utils/getUserDocument';
@@ -25,6 +25,7 @@ const Home = () => {
 
     useEffect(() => {
         getUserNotesFromDB()
+     
     }, [])
 
     const getUserNotesFromDB = async () => {
@@ -62,7 +63,7 @@ const Home = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Notess</Text>
-                <AntDesign name="search1" size={wp * 0.07} color={colors.veryLightGray} />
+                <AntDesign name="search1" size={wp * 0.07} color={colors.brightOrange} />
             </View>
 
             <FlatList

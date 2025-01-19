@@ -1,5 +1,5 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { colors } from '@/style/colors'
 import Button from './Button'
 import Input from './Input'
@@ -33,6 +33,10 @@ const NoteModal = () => {
     }
 
 
+  
+    
+
+    
     const handleCreateNote = async () => {
         try {
             const dbRef = await getUserDocument(currentUser)

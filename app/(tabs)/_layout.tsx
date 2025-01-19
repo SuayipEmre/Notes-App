@@ -31,9 +31,16 @@ const TabLayout = () => {
                 name='profile'
                 options={{
                     title: 'Profile',  
-                    tabBarIcon: ({focused}) => <AntDesign name="user" size={24} color={focused ? colors.brightOrange : colors.veryLightGray}/>
+                    tabBarIcon: ({focused}) => <AntDesign name="user" size={24} color={focused ? colors.brightOrange : colors.veryLightGray}/>,
                 }}
             />
+
+            <Tabs.Screen name='(shared)' options={{
+                href : null,
+                tabBarStyle:{
+                    display : 'none'
+                }
+            }} />
         </Tabs>
     )
 }

@@ -8,7 +8,7 @@ type Props = {
     value: string,
     onChangeText: (value: string) => void,
     isSecure?: boolean,
-    placeholder : string,
+    placeholder? : string,
     isMultiline? : boolean
 }
 const Input: React.FC<Props> = ({ onChangeText, value, isSecure, placeholder, isMultiline }) => {
